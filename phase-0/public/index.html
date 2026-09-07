@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EU AI Act website compliance — coming soon</title>
+  <meta name="description" content="A free checklist for what the EU AI Act's Article 50 disclosure rules mean for AI-generated content on your website. Coming soon — sign up to be notified.">
+
+  <!--
+    Canonical URL: decided by the CPO as gro-better.com/compliance
+    (https, no www, no trailing slash) — design-spec.md 1.1/1.4. See
+    public/.htaccess for the redirect/rewrite rules that need to be
+    applied at actual deployment to make that URL the one that's
+    actually served (not yet verified against the real lima-city vhost —
+    credentials pending).
+  -->
+  <link rel="canonical" href="https://gro-better.com/compliance">
+
+  <link rel="stylesheet" href="/assets/style.css">
+
+  <!--
+    Loaded synchronously and first, on purpose: Google Consent Mode
+    defaults must be set before any other tracking-relevant script runs.
+    See assets/analytics.js for why.
+  -->
+  <script src="/assets/analytics.js"></script>
+</head>
+<body>
+  <!--
+    PLACEHOLDER COPY: marketing/legal has not finalized page copy yet.
+    The structure, states, and behavior below are the real Day-1 build;
+    the wording is a conservative draft pending sign-off — see
+    design-spec.md 1.5 for the fine/penalty framing constraint this copy
+    is written to satisfy (qualitative urgency language only, no euro
+    figures, no percentages, no computed "your fine" framing).
+  -->
+  <main class="page">
+    <header class="page__header">
+      <p class="page__eyebrow">[Agency name — placeholder]</p>
+    </header>
+
+    <section class="hero" aria-labelledby="hero-heading">
+      <h1 id="hero-heading">Is your website's AI-generated content ready for the EU AI Act?</h1>
+      <p class="hero__subcopy">
+        <!-- PLACEHOLDER copy: legal-copy sanity pass still pending (design-spec.md 1.5) -->
+        Article 50 of the EU AI Act requires clear disclosure when website content — text,
+        images, or chat — is AI-generated. Enforcement risk is real, not hypothetical, and
+        SMEs face their own, lower penalty caps rather than the headline figures aimed at large
+        enterprises.
+      </p>
+      <p class="hero__subcopy">
+        <!-- PLACEHOLDER copy -->
+        We're building a free, plain-language checklist so you can find out exactly where you
+        stand — no legal background required. It isn't ready yet, but you can be the first to
+        know when it is.
+      </p>
+    </section>
+
+    <section class="signup" aria-labelledby="signup-heading">
+      <h2 id="signup-heading" class="visually-hidden">Get notified when the checklist is ready</h2>
+
+      <form id="signup-form" novalidate>
+        <label for="email">Email address</label>
+        <div class="signup__field-row">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            placeholder="you@yourcompany.com"
+          >
+          <button type="submit" id="signup-submit">Notify me</button>
+        </div>
+
+        <p id="email-error" class="field-error" role="alert" hidden></p>
+
+        <p class="signup__microcopy">
+          We'll email you the moment it's ready. One email, no spam.
+        </p>
+        <p class="signup__consent">
+          <!-- PLACEHOLDER: /privacy-policy does not exist yet — must resolve before ship -->
+          By submitting, you agree to be contacted about this checklist. See our
+          <a href="/privacy-policy">privacy policy</a>.
+        </p>
+      </form>
+
+      <div id="signup-success" class="signup__success" role="status" hidden>
+        <p id="signup-success-message">You're on the list — we'll email you as soon as it's ready.</p>
+      </div>
+
+      <p id="signup-submit-error" class="field-error field-error--submit" role="alert" hidden>
+        Something went wrong — please try again.
+      </p>
+    </section>
+  </main>
+
+  <!-- S0.0 — non-blocking cookie consent banner. Hidden by default; shown by cookie-banner.js unless a choice was already stored. -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
+    <p class="cookie-banner__text">
+      We use cookies for analytics to understand how visitors use this page.
+      <!-- PLACEHOLDER: /privacy-policy does not exist yet -->
+      See our <a href="/privacy-policy">privacy policy</a>.
+    </p>
+    <div class="cookie-banner__actions">
+      <button type="button" id="cookie-decline">Decline</button>
+      <button type="button" id="cookie-accept">Accept</button>
+    </div>
+  </div>
+
+  <script src="/assets/cookie-banner.js" defer></script>
+  <script src="/assets/form.js" defer></script>
+</body>
+</html>

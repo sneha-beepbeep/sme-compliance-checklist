@@ -1,0 +1,43 @@
+# Canonical-URL handling for https://gro-better.com/compliance
+# (https, apex/non-www, no trailing slash) — design-spec.md 1.1/1.4. The
+# "zero broken-link" quality bar is measured against that exact URL, so
+# every variant below must resolve to it rather than silently serving
+# content at multiple effective URLs.
+#
+# Assumption this rewrite depends on: gro-better.com's document root is
+# dedicated to this app (assets/ and api/ live at domain root; see
+# public/assets/form.js's API_URL comment). "/compliance" is treated as a
+# virtual, rewritten path to index.html — NOT a real filesystem
+# directory — specifically so Apache's own automatic "add a trailing
+# slash to directory requests" behavior (mod_dir) never fires and fights
+# with the chosen no-trailing-slash canonical form.
+#
+# NOT YET VERIFIED against the real lima-city vhost (credentials pending
+# as of 2026-09-07 — see CLAUDE.md decision log). Whoever completes the
+# Day 2 deploy must confirm:
+#   1. mod_rewrite is enabled on the lima-city account and AllowOverride
+#      permits these rules to take effect at all (see phase-0/Dockerfile
+#      for the equivalent local-dev config),
+#   2. the assumption above still holds — i.e. nothing else needs to live
+#      at this domain's root; if gro-better.com hosts other content too,
+#      these rules and the absolute asset/API paths need revisiting,
+#   3. there isn't a conflicting rewrite/redirect already configured at
+#      the host level (some managed-hosting control panels inject their
+#      own https/www redirects, which can loop against these rules).
+
+RewriteEngine On
+
+# Force https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Force apex (non-www)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+# /compliance/ (trailing slash) -> /compliance (canonical, no slash)
+RewriteRule ^compliance/$ /compliance [R=301,L]
+
+# Serve index.html for /compliance without changing the visible URL and
+# without an actual directory lookup (see assumption above).
+RewriteRule ^compliance$ /index.html [L]

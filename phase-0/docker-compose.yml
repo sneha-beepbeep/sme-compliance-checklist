@@ -1,0 +1,41 @@
+# Local dev environment: PHP/Apache app + MariaDB, matching the target
+# lima-city stack (PHP + MySQL/MariaDB) closely enough for dev parity.
+# Not the Day 2 deploy path — see Dockerfile.
+#
+# Usage:
+#   cp .env.example .env   # fill in local values (defaults below already work)
+#   docker compose up --build
+#   -> http://localhost:8080
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-sme_compliance}
+      DB_USER: ${DB_USER:-app}
+      DB_PASSWORD: ${DB_PASSWORD:-app_password}
+    depends_on:
+      - db
+    volumes:
+      - ./public:/var/www/html
+      - ./api:/var/www/html/api
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-sme_compliance}
+      MYSQL_USER: ${DB_USER:-app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-app_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  db_data:

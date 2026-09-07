@@ -1,0 +1,202 @@
+/* Minimal layout/styling to satisfy S0.7 (responsive, mobile treated as
+   primary) and the S0.0 requirement that the cookie banner never covers
+   the email field or submit button on small viewports. Not a design
+   system — Phase 0 is a single throwaway page (design-spec.md 1.1). */
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 1rem 2rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #fafafa;
+  transition: padding-bottom 0.15s ease;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: 2rem;
+}
+
+.page__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0 0 1rem;
+}
+
+.hero h1 {
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin: 0 0 1rem;
+}
+
+.hero__subcopy {
+  font-size: 1rem;
+  color: #333;
+}
+
+.signup {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+}
+
+.signup label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.signup__field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.signup__field-row input[type="email"] {
+  flex: 1 1 220px;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.signup__field-row input[aria-invalid="true"] {
+  border-color: #b3261e;
+}
+
+.signup__field-row button {
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  background: #1a56db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.signup__field-row button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.field-error {
+  color: #b3261e;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+.field-error--submit {
+  margin-top: 0.75rem;
+}
+
+.signup__microcopy,
+.signup__consent {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0.75rem 0 0;
+}
+
+.signup__consent a {
+  color: #1a56db;
+}
+
+.signup__success {
+  padding: 1rem;
+  background: #eafaf0;
+  border: 1px solid #b7e4c7;
+  border-radius: 6px;
+  color: #1e4620;
+}
+
+.cookie-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cookie-banner__text {
+  margin: 0;
+  font-size: 0.85rem;
+  flex: 1 1 240px;
+}
+
+.cookie-banner__text a {
+  color: #9ec1ff;
+}
+
+.cookie-banner__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex: 0 0 auto;
+}
+
+.cookie-banner__actions button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+#cookie-accept {
+  background: #1a56db;
+  color: #fff;
+}
+
+#cookie-decline {
+  background: transparent;
+  color: #fff;
+  border-color: #777;
+}
+
+@media (max-width: 480px) {
+  .cookie-banner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .cookie-banner__actions {
+    justify-content: center;
+  }
+
+  .signup__field-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

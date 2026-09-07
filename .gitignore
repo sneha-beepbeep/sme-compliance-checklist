@@ -1,3 +1,8 @@
 node_modules/
 .DS_Store
 .claude/settings.local.json
+
+# Phase 0 local secrets — see phase-0/.env.example for the documented
+# template. Never commit the real file.
+phase-0/.env
+.env
