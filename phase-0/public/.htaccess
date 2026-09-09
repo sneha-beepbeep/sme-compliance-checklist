@@ -39,6 +39,15 @@
   </IfModule>
 </FilesMatch>
 
+# Disable Apache's directory-listing (mod_autoindex) so requests to
+# directories without an index file (e.g. /api/, /assets/) don't expose
+# the app's internal file inventory (filenames, sizes, timestamps). No
+# secrets are served this way today (db.php/env.php echo nothing), but
+# this is unnecessary information disclosure on a page handling EU
+# personal data, and it's inconsistent with the .env/.sql hardening
+# above. Added post-/test (finding 1.3).
+Options -Indexes
+
 RewriteEngine On
 
 # Force https

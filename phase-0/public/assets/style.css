@@ -233,8 +233,38 @@ body {
     justify-content: center;
   }
 
+  /* Same flex-basis-becomes-height bug as the email input fix below, in
+     a different element: `.cookie-banner__text`'s `flex: 1 1 240px` is a
+     *width* hint for the row layout above 480px, but `.cookie-banner`
+     switches to `flex-direction: column` here, so 240px is read as a
+     *height* on the now-vertical main axis. This was already live in
+     production and pre-dates this fix pass, but was masked: the
+     ~220px-tall broken email input (fixed below) pushed the submit
+     button off-screen, so the banner's own oversized text block
+     (measured ~240px tall) never visibly collided with it. Fixing the
+     email input alone would have newly exposed this — a ~312px-tall
+     banner covering the email field *and* submit button on phone
+     viewports — as a regression against the test report's explicitly
+     passed "banner does not vertically overlap submit button" check.
+     Reset flex-basis so the text sizes by content instead. */
+  .cookie-banner__text {
+    flex-basis: auto;
+  }
+
   .signup__field-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  /* Bug fix (post-/test): in the row layout above 480px, `flex: 1 1 220px`
+     on the email input uses 220px as a *width* hint on the horizontal main
+     axis. Once the column layout above switches the main axis to vertical,
+     the same flex-basis is read as a *height* instead, producing a
+     ~220px-tall broken-looking input on every phone-width viewport. Reset
+     flex-basis to auto and let the input size itself by content/padding
+     (a normal single-line field) at these widths; width is already 100%
+     via `align-items: stretch` on the column flex container. */
+  .signup__field-row input[type="email"] {
+    flex-basis: auto;
   }
 }
