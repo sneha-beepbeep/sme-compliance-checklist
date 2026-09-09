@@ -7,7 +7,7 @@ requirements — in plain language, with no legal background required.
 **Status: launching in two parts.** Part one is live now: a short page
 where you can register your interest and be notified the moment the full
 checklist is ready. The full interactive checklist is being built as a
-fast-follow and isn't available yet.
+fast-follow.
 
 ## Who it's for
 
@@ -33,7 +33,7 @@ part, described below.
 
 ## What's coming next
 
-The full checklist (in progress, no fixed release date yet) will:
+The full checklist will:
 
 - Walk you through what Article 50 requires for AI-generated content on
   your website, item by item, in plain language.
