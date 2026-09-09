@@ -16,11 +16,11 @@
  *
  * API path is domain-root-absolute ("/api/subscribe.php") rather than
  * relative, matching the deployment assumption documented in
- * public/.htaccess: gro-better.com's document root is dedicated to this
- * app, with /compliance served as a rewritten virtual path to
- * index.html rather than a real filesystem directory (avoids a trailing-
- * slash mismatch between the no-slash canonical URL and relative asset
- * resolution). Local Docker dev mirrors this: assets/ and api/ are both
+ * public/.htaccess: compliance.gro-better.com's document root is
+ * dedicated to this app, and the canonical URL is the subdomain root
+ * itself (no virtual path involved, since 2026-09-09's move away from
+ * the original apex+path form). An absolute path avoids any ambiguity
+ * either way. Local Docker dev mirrors this: assets/ and api/ are both
  * merged at the container's web root, so this same absolute path works
  * unchanged in both environments.
  */

@@ -44,6 +44,32 @@ body {
   margin: 0 0 1rem;
 }
 
+.page__eyebrow a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Privacy policy page (public/privacy-policy.html) only. */
+.legal h1 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.legal h2 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.legal p,
+.legal ul {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.legal ul {
+  padding-left: 1.25rem;
+}
+
 .hero h1 {
   font-size: 1.75rem;
   line-height: 1.25;
@@ -130,6 +156,18 @@ body {
   border: 1px solid #b7e4c7;
   border-radius: 6px;
   color: #1e4620;
+}
+
+/* Author `display: flex` below otherwise beats the browser's built-in
+   `[hidden] { display: none }` UA rule regardless of specificity/order
+   (author-normal always wins over user-agent-normal in the cascade), so
+   toggling the `hidden` attribute via JS (cookie-banner.js) would
+   silently do nothing without this override — the banner would render
+   permanently and never dismiss on Accept/Decline, nor stay hidden for a
+   returning visitor who already chose. Higher specificity than
+   `.cookie-banner` alone ensures this wins whenever `hidden` is set. */
+.cookie-banner[hidden] {
+  display: none;
 }
 
 .cookie-banner {

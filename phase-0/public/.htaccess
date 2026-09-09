@@ -1,29 +1,43 @@
-# Canonical-URL handling for https://gro-better.com/compliance
-# (https, apex/non-www, no trailing slash) — design-spec.md 1.1/1.4. The
+# Canonical-URL handling for https://compliance.gro-better.com/
+# (https, non-www, subdomain root) — design-spec.md 1.1/1.4, updated
+# 2026-09-09 when the canonical URL moved from an apex+path form
+# (gro-better.com/compliance) to this dedicated subdomain's root. The
 # "zero broken-link" quality bar is measured against that exact URL, so
 # every variant below must resolve to it rather than silently serving
 # content at multiple effective URLs.
 #
-# Assumption this rewrite depends on: gro-better.com's document root is
-# dedicated to this app (assets/ and api/ live at domain root; see
-# public/assets/form.js's API_URL comment). "/compliance" is treated as a
-# virtual, rewritten path to index.html — NOT a real filesystem
-# directory — specifically so Apache's own automatic "add a trailing
-# slash to directory requests" behavior (mod_dir) never fires and fights
-# with the chosen no-trailing-slash canonical form.
+# Assumption this rewrite depends on: compliance.gro-better.com's
+# document root is dedicated to this app (assets/ and api/ live at the
+# subdomain's root; see public/assets/form.js's API_URL comment). Because
+# the canonical path is now the subdomain root itself, Apache's default
+# document (index.html) already serves it directly — no virtual-path
+# rewrite is needed for that part. The old "/compliance" virtual path is
+# kept below only as a redirect, for anything that might already point at
+# it.
 #
-# NOT YET VERIFIED against the real lima-city vhost (credentials pending
-# as of 2026-09-07 — see CLAUDE.md decision log). Whoever completes the
-# Day 2 deploy must confirm:
-#   1. mod_rewrite is enabled on the lima-city account and AllowOverride
-#      permits these rules to take effect at all (see phase-0/Dockerfile
-#      for the equivalent local-dev config),
-#   2. the assumption above still holds — i.e. nothing else needs to live
-#      at this domain's root; if gro-better.com hosts other content too,
-#      these rules and the absolute asset/API paths need revisiting,
-#   3. there isn't a conflicting rewrite/redirect already configured at
-#      the host level (some managed-hosting control panels inject their
-#      own https/www redirects, which can loop against these rules).
+# To be re-verified against the real lima-city vhost after this change is
+# redeployed (Day 2, 2026-09-09) — see phase-0/deploy/README.md's
+# checklist.
+
+# Deny direct web access to the .env file and raw .sql files. In the
+# deployed layout, public/ and api/ are merged into a single document
+# root (see Dockerfile's comment on this), and api/env.php's default
+# config path (phase-0/.env locally) resolves to that same document
+# root's top level in production — so without this rule, .env would be
+# directly downloadable. Written for both Apache 2.4 (mod_authz_core)
+# and 2.2 (mod_access_compat) syntax since lima-city's Apache version
+# hasn't been confirmed. Re-confirm after this change is redeployed that
+# this still blocks the request (e.g. `curl -I
+# https://compliance.gro-better.com/.env` should return 403, not 200).
+<FilesMatch "(^\.env$|\.sql$)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
 
 RewriteEngine On
 
@@ -31,13 +45,19 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Force apex (non-www)
+# Force non-www
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
-# /compliance/ (trailing slash) -> /compliance (canonical, no slash)
-RewriteRule ^compliance/$ /compliance [R=301,L]
+# Old apex+path canonical form (gro-better.com/compliance), now retired in
+# favor of the subdomain root (compliance.gro-better.com/). The campaign
+# hadn't gone out yet when this changed, so there's no real risk of an
+# already-shared /compliance link — this redirect exists purely for
+# safety/hygiene rather than a known broken-link case.
+RewriteRule ^compliance/?$ / [R=301,L]
 
-# Serve index.html for /compliance without changing the visible URL and
-# without an actual directory lookup (see assumption above).
-RewriteRule ^compliance$ /index.html [L]
+# /privacy-policy — serves public/privacy-policy.html internally (no
+# redirect, no .html in the resolved URL), matching the clean-URL form
+# index.html's signup consent line and cookie banner link to (both
+# previously pointed at a 404 before this page existed). Added 2026-09-09.
+RewriteRule ^privacy-policy/?$ privacy-policy.html [L]

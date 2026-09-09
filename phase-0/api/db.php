@@ -11,7 +11,14 @@ declare(strict_types=1);
  *
  * Required env vars: DB_HOST, DB_NAME, DB_USER
  * Optional: DB_PORT (default 3306), DB_PASSWORD (default empty)
+ *
+ * env.php is loaded first so getenv() also picks up values from a local
+ * .env file on hosts that don't support setting real process env vars —
+ * see env.php's own header comment. It is a pure fallback: any variable
+ * already set as a real env var is left untouched.
  */
+
+require_once __DIR__ . '/env.php';
 
 function get_db_connection(): PDO
 {

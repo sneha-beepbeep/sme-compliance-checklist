@@ -7,22 +7,24 @@
   <meta name="description" content="A free checklist for what the EU AI Act's Article 50 disclosure rules mean for AI-generated content on your website. Coming soon — sign up to be notified.">
 
   <!--
-    Canonical URL: decided by the CPO as gro-better.com/compliance
-    (https, no www, no trailing slash) — design-spec.md 1.1/1.4. See
-    public/.htaccess for the redirect/rewrite rules that need to be
-    applied at actual deployment to make that URL the one that's
-    actually served (not yet verified against the real lima-city vhost —
-    credentials pending).
+    Canonical URL: https://compliance.gro-better.com/ (https, non-www,
+    subdomain root) — updated 2026-09-09 per CPO decision; supersedes the
+    original design-spec.md 1.1/1.4 apex+path form
+    (gro-better.com/compliance). See public/.htaccess for the redirect/
+    rewrite rules that make that URL the one that's actually served.
   -->
-  <link rel="canonical" href="https://gro-better.com/compliance">
+  <link rel="canonical" href="https://compliance.gro-better.com/">
 
   <link rel="stylesheet" href="/assets/style.css">
 
   <!--
     Loaded synchronously and first, on purpose: Google Consent Mode
     defaults must be set before any other tracking-relevant script runs.
-    See assets/analytics.js for why.
+    See assets/analytics.js for why. config.php must load before
+    analytics.js so window.GA_MEASUREMENT_ID (env-driven, not hardcoded —
+    see config.php) is already defined when analytics.js runs.
   -->
+  <script src="/config.php"></script>
   <script src="/assets/analytics.js"></script>
 </head>
 <body>
@@ -78,7 +80,6 @@
           We'll email you the moment it's ready. One email, no spam.
         </p>
         <p class="signup__consent">
-          <!-- PLACEHOLDER: /privacy-policy does not exist yet — must resolve before ship -->
           By submitting, you agree to be contacted about this checklist. See our
           <a href="/privacy-policy">privacy policy</a>.
         </p>
@@ -98,7 +99,6 @@
   <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" hidden>
     <p class="cookie-banner__text">
       We use cookies for analytics to understand how visitors use this page.
-      <!-- PLACEHOLDER: /privacy-policy does not exist yet -->
       See our <a href="/privacy-policy">privacy policy</a>.
     </p>
     <div class="cookie-banner__actions">

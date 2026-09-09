@@ -18,6 +18,9 @@ services:
       DB_NAME: ${DB_NAME:-sme_compliance}
       DB_USER: ${DB_USER:-app}
       DB_PASSWORD: ${DB_PASSWORD:-app_password}
+      # Left empty by default — see .env.example. analytics.js skips
+      # loading gtag.js entirely until a real GA4 property exists.
+      GA_MEASUREMENT_ID: ${GA_MEASUREMENT_ID:-}
     depends_on:
       - db
     volumes:

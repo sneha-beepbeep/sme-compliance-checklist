@@ -33,10 +33,17 @@ This is a single static-feeling page, not an application.
 original draft:**
 - **Standalone page** — not integrated into the existing agency site's
   branding, nav, or footer. Confirms this spec's original recommendation.
-- **Destination URL: `gro-better.com/compliance`.** This is the exact URL
-  campaign assets must point to, and the one the "zero broken-link" quality
-  bar (PRD Success metrics) is measured against — see 1.2 and the new edge
-  case in 1.4.
+- **Destination URL: `https://compliance.gro-better.com/`** (subdomain
+  root, no path). This is the exact URL campaign assets must point to, and
+  the one the "zero broken-link" quality bar (PRD Success metrics) is
+  measured against — see 1.2 and the new edge case in 1.4. **Corrected
+  2026-09-09:** the CPO's original 2026-09-07 decision specified
+  `gro-better.com/compliance` (apex domain + path); during Day 2 of
+  `/build`, domain porting to lima-city required a subdomain approach
+  instead, and the CPO confirmed `compliance.gro-better.com` (subdomain
+  root) as the permanent canonical URL going forward. Content now serves
+  directly at the subdomain root — there is no `/compliance` virtual path
+  to route.
 - **Analytics platform: GA4.** See 1.6 for the concrete event
   implementation (this replaces the structural-only event scoping from the
   original draft).
@@ -55,7 +62,8 @@ original draft:**
 
 1. Client clicks the campaign link (email/social, already carrying UTM
    parameters) → lands directly on the placeholder page at
-   **`gro-better.com/compliance`**.
+   **`https://compliance.gro-better.com/`** (subdomain root, no path — see
+   1.1).
 2. Page renders immediately (no login, no loading spinner beyond normal
    network latency) showing: what's coming, why it matters, and an email
    capture form. The cookie consent banner (S0.0) also appears at this
@@ -203,12 +211,16 @@ That's the entire flow. There is no step 6.
   banner:** the banner does not reappear (S0.0's persisted-choice
   behavior); the rest of the page behaves identically to a first visit.
 - **Destination URL mismatches (new, from the URL decision):** the "zero
-  broken-link" quality bar is measured against `gro-better.com/compliance`
+  broken-link" quality bar is measured against `compliance.gro-better.com`
   specifically (see 1.1, 1.2). Any deployment detail that resolves to a
-  different effective URL — a trailing slash, `www.` vs. non-`www.`,
-  `http` vs. `https`, or an unexpected redirect chain — risks breaking that
-  bar even if "a" page loads somewhere. This is a routing/deployment note
-  for `/plan`, not just a copy detail.
+  different effective URL — a trailing slash, `www.compliance.` vs.
+  non-`www.` subdomain, `http` vs. `https`, or an unexpected redirect chain
+  — risks breaking that bar even if "a" page loads somewhere. This is a
+  routing/deployment note for `/plan`, not just a copy detail. (Corrected
+  2026-09-09: this used to reference an apex-domain-plus-path structure;
+  since the canonical URL is now a subdomain root with no path, there is no
+  `/compliance` path segment to mismatch on — only host/scheme/trailing-
+  slash variants remain relevant here.)
 
 ### 1.5 Fine/penalty framing (if used at all on this page)
 
@@ -580,12 +592,13 @@ is scoped, not assumed to inherit the Phase 0 decision.
 
 **Resolved 2026-09-07 (were items 1–6 in the original draft):** analytics
 platform (GA4), standalone-vs-integrated page (standalone), destination URL
-(`gro-better.com/compliance`), GDPR handling (consent line + privacy-policy
-link **and** a cookie consent banner), fine-framing permission (qualitative
-urgency language allowed, still no numbers), and duplicate-email handling
-(confirmed as originally spec'd — treat as success). These are now
-reflected as decisions in Sections 1.1, 1.3 (S0.0/S0.1/S0.6), 1.4, 1.5, 1.6,
-and 3 — not listed below as open questions.
+(`compliance.gro-better.com`, subdomain root — corrected 2026-09-09 from the
+original apex+path decision, see 1.1), GDPR handling (consent line +
+privacy-policy link **and** a cookie consent banner), fine-framing
+permission (qualitative urgency language allowed, still no numbers), and
+duplicate-email handling (confirmed as originally spec'd — treat as
+success). These are now reflected as decisions in Sections 1.1, 1.3
+(S0.0/S0.1/S0.6), 1.4, 1.5, 1.6, and 3 — not listed below as open questions.
 
 The remaining flags affect Phase 1, which has no fixed date, but are still
 worth resolving early since they shape the checklist's core interaction
@@ -664,3 +677,5 @@ model.
   center** — the CPO's 2026-09-07 decision added the banner requirement
   itself, but the simplest GDPR-compliant shape was kept to protect the
   4-day Phase 0 timeline (see tradeoff 3.7).
+</content>
+</invoke>
