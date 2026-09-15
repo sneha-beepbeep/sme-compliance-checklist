@@ -1,0 +1,13 @@
+{
+  "name": "phase-1-tests",
+  "private": true,
+  "description": "Verification scripts for Phase 1. status-engine.test.js and persistence.test.js have zero dependencies (plain Node). wizard-browser.test.js needs puppeteer-core plus a real local Chrome/Chromium and a running instance of the app — see this directory's README.md.",
+  "scripts": {
+    "test:engine": "node status-engine.test.js",
+    "test:persistence": "node persistence.test.js",
+    "test:browser": "node wizard-browser.test.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.0.0"
+  }
+}

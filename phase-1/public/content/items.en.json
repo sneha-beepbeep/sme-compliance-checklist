@@ -1,0 +1,127 @@
+{
+  "_NOTICE": "PLACEHOLDER CONTENT — NOT REAL LEGAL TEXT. Every statement, sub-question, and citation below is a deliberately obvious placeholder pending the still-running legal sanity-check referenced in docs/design-spec.md Section 2 and docs/prd.md. Do not treat any string in this file as real Article 50 guidance. This file exists to exercise the status-computation engine end to end, not to inform a real user.",
+  "contentVersion": 1,
+  "locale": "en",
+  "qualifyingQuestion": {
+    "id": "qualifying",
+    "text": "Does your website include any AI-generated content (text, images, chat, etc.)?"
+  },
+  "items": [
+    {
+      "id": "item-1",
+      "order": 1,
+      "statement": "[PLACEHOLDER — pending legal sanity-check] Item 1 of 4: This is a placeholder statement standing in for a real Article 50 transparency requirement about labeling AI-generated text content. Not real regulatory text.",
+      "citation": {
+        "label": "Article 50 (placeholder)",
+        "reference": "[PLACEHOLDER CITATION — exact Article 50 provision text pending legal sanity-check]"
+      },
+      "subQuestions": [
+        {
+          "id": "item-1-q1",
+          "text": "[Placeholder, factual self-check — not legal advice] Have you added any kind of visible note near AI-generated text sections on your site?"
+        },
+        {
+          "id": "item-1-q2",
+          "text": "[Placeholder, factual self-check — not legal advice] Is that note visible before a visitor reads the AI-generated text, rather than buried elsewhere on the page?"
+        }
+      ],
+      "statusRule": {
+        "compliantWhen": [
+          { "item-1-q1": "yes", "item-1-q2": "yes" }
+        ],
+        "notCompliantWhen": [
+          { "item-1-q1": "no", "item-1-q2": "no" },
+          { "item-1-q1": "no", "item-1-q2": "yes" },
+          { "item-1-q1": "yes", "item-1-q2": "no" }
+        ]
+      }
+    },
+    {
+      "id": "item-2",
+      "order": 2,
+      "statement": "[PLACEHOLDER — pending legal sanity-check] Item 2 of 4: This is a placeholder statement standing in for a real Article 50 transparency requirement about AI-generated or manipulated images on the site. Not real regulatory text.",
+      "citation": {
+        "label": "Article 50 (placeholder)",
+        "reference": "[PLACEHOLDER CITATION — exact Article 50 provision text pending legal sanity-check]"
+      },
+      "subQuestions": [
+        {
+          "id": "item-2-q1",
+          "text": "[Placeholder, factual self-check — not legal advice] Does your site use any AI-generated or AI-edited images (e.g. product photos, illustrations, backgrounds)?"
+        },
+        {
+          "id": "item-2-q2",
+          "text": "[Placeholder, factual self-check — not legal advice] If so, is there a caption or label identifying those images as AI-generated?"
+        }
+      ],
+      "statusRule": {
+        "compliantWhen": [
+          { "item-2-q1": "yes", "item-2-q2": "yes" },
+          { "item-2-q1": "no", "item-2-q2": "no" }
+        ],
+        "notCompliantWhen": [
+          { "item-2-q1": "yes", "item-2-q2": "no" },
+          { "item-2-q1": "no", "item-2-q2": "yes" }
+        ]
+      }
+    },
+    {
+      "id": "item-3",
+      "order": 3,
+      "statement": "[PLACEHOLDER — pending legal sanity-check] Item 3 of 4: This is a placeholder statement standing in for a real Article 50 transparency requirement about AI chat/support widgets disclosing they are automated. Not real regulatory text.",
+      "citation": {
+        "label": "Article 50 (placeholder)",
+        "reference": "[PLACEHOLDER CITATION — exact Article 50 provision text pending legal sanity-check]"
+      },
+      "subQuestions": [
+        {
+          "id": "item-3-q1",
+          "text": "[Placeholder, factual self-check — not legal advice] Does your site have a chat or support widget?"
+        },
+        {
+          "id": "item-3-q2",
+          "text": "[Placeholder, factual self-check — not legal advice] Does that widget tell the visitor up front that they're talking to an automated system, if it is one?"
+        },
+        {
+          "id": "item-3-q3",
+          "text": "[Placeholder, factual self-check — not legal advice] Is there always a clear, easy way for the visitor to reach a human instead?"
+        }
+      ],
+      "statusRule": {
+        "compliantWhen": [
+          { "item-3-q1": "yes", "item-3-q2": "yes", "item-3-q3": "yes" }
+        ],
+        "notCompliantWhen": [
+          { "item-3-q1": "no", "item-3-q2": "no", "item-3-q3": "no" },
+          { "item-3-q1": "yes", "item-3-q2": "no", "item-3-q3": "no" },
+          { "item-3-q1": "yes", "item-3-q2": "no", "item-3-q3": "yes" }
+        ]
+      },
+      "_note": "Deliberately leaves other Yes/No combinations (e.g. q1=yes/q2=yes/q3=no) unmatched by either list, so the status engine's documented 'unmatched combination falls back to needs_check' safety rule is actually exercised by real content, not just by a synthetic unit test."
+    },
+    {
+      "id": "item-4",
+      "order": 4,
+      "statement": "[PLACEHOLDER — pending legal sanity-check] Item 4 of 4: This is a placeholder statement standing in for a real Article 50 transparency requirement about deepfake-style synthetic media disclosure. Not real regulatory text.",
+      "citation": {
+        "label": "Article 50 (placeholder)",
+        "reference": "[PLACEHOLDER CITATION — exact Article 50 provision text pending legal sanity-check]"
+      },
+      "subQuestions": [
+        {
+          "id": "item-4-q1",
+          "text": "[Placeholder, factual self-check — not legal advice] Does your site publish any synthetic audio or video (e.g. an AI-voiced explainer, an AI-generated spokesperson clip)?"
+        }
+      ],
+      "statusRule": {
+        "compliantWhen": [
+          { "item-4-q1": "no" }
+        ],
+        "notCompliantWhen": [
+          { "item-4-q1": "yes" }
+        ]
+      },
+      "_note": "Placeholder logic only — a real content pass may well reverse which answer is compliant for a genuine disclosure requirement. Not meant to imply real guidance."
+    }
+  ]
+}

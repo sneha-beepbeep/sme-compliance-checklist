@@ -1,0 +1,52 @@
+# Local dev environment: PHP/Apache app + MariaDB, matching the target
+# production stack (PHP + MySQL/MariaDB) closely enough for dev parity.
+# Not the real deploy path — see Dockerfile.
+#
+# Ports (8081/3307) are deliberately different from Phase 0's
+# docker-compose.yml (8080/3306) so both stacks can run side by side
+# locally without a port clash, since they're independently deployable
+# apps (/plan Section 1).
+#
+# Usage:
+#   cp .env.example .env   # fill in local values (defaults below already work)
+#   docker compose up --build
+#   -> http://localhost:8081
+
+services:
+  app:
+    build: .
+    ports:
+      - "8081:80"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-sme_compliance_p1}
+      DB_USER: ${DB_USER:-app}
+      DB_PASSWORD: ${DB_PASSWORD:-app_password}
+      # Left empty by default, same pattern as Phase 0 — analytics.js
+      # skips loading gtag.js entirely until a real GA4 property exists.
+      GA_MEASUREMENT_ID: ${GA_MEASUREMENT_ID:-}
+      # Left empty by default — api/contact.php skips the best-effort
+      # notification email entirely until this is set.
+      NOTIFY_EMAIL: ${NOTIFY_EMAIL:-}
+    depends_on:
+      - db
+    volumes:
+      - ./public:/var/www/html
+      - ./api:/var/www/html/api
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-sme_compliance_p1}
+      MYSQL_USER: ${DB_USER:-app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-app_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  db_data:

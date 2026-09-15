@@ -5,4 +5,9 @@ node_modules/
 # Phase 0 local secrets — see phase-0/.env.example for the documented
 # template. Never commit the real file.
 phase-0/.env
+
+# Phase 1 local secrets — see phase-1/.env.example for the documented
+# template. Never commit the real file.
+phase-1/.env
+
 .env

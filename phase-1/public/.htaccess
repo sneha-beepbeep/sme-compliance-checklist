@@ -1,0 +1,49 @@
+# Canonical-URL / hardening rules for Phase 1's future subdomain.
+#
+# The actual subdomain name is NOT YET DECIDED (/plan Open Question 2 /
+# /build default #2) — these rules are written host-agnostically (using
+# %{HTTP_HOST} / %{HTTPS}, never a hardcoded domain name), the same
+# pattern phase-0/public/.htaccess uses, so nothing here needs to change
+# once a real subdomain is bound. Re-verify against the real vhost after
+# the first real deploy, exactly as Phase 0's own .htaccess comments
+# flagged and as its deploy/README.md's checklist required.
+
+# Deny direct web access to the .env file and raw .sql files. In the
+# deployed layout, public/ and api/ are merged into a single document
+# root (see Dockerfile), and api/env.php's default config path
+# (phase-1/.env locally) resolves to that same document root's top level
+# in production — so without this rule, .env would be directly
+# downloadable. Written for both Apache 2.4 (mod_authz_core) and 2.2
+# (mod_access_compat) syntax since the real host's Apache version isn't
+# confirmed yet (same uncertainty Phase 0 had before its first real
+# deploy).
+<FilesMatch "(^\.env$|\.sql$)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Disable Apache's directory-listing (mod_autoindex) so requests to
+# directories without an index file (e.g. /api/, /assets/, /content/)
+# don't expose the app's internal file inventory. Added from the start
+# here — Phase 0 only added this after a real /test finding
+# (docs/test-report.md, finding 1.3); no reason to rediscover the same
+# gap in Phase 1.
+Options -Indexes
+
+RewriteEngine On
+
+# Force https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Force non-www (matches Phase 0's canonical-URL convention: subdomain
+# root, non-www, https — see docs/design-spec.md 1.1 and /plan Section 2;
+# apply the same convention here unless/until a different canonical form
+# is decided for Phase 1's real subdomain).
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
