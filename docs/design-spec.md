@@ -9,12 +9,16 @@ build, and do not let Phase 0's throwaway simplicity leak into Phase 1's
 quality bar.
 
 A consolidated list of open questions for the CPO is in **Section 4**. The
-original 13 flags have been narrowed to 7: the CPO resolved flags 1–6 (all
-Phase-0-blocking) on 2026-09-07, and those decisions are now reflected as
-settled design throughout Sections 1, 1.5, 1.6, and 3, rather than listed as
-open questions. The remaining flags affect Phase 1, which has no fixed date,
-but are still worth resolving early since they shape the checklist's core
-interaction model.
+original 13 flags were narrowed to 7 on 2026-09-07 (the CPO resolved flags
+1–6, all Phase-0-blocking, that day — those decisions are reflected as
+settled design throughout Sections 1, 1.5, 1.6, and 3). The remaining 7
+Phase-1 flags were resolved by the CPO on 2026-09-11, in this revision, and
+are now reflected as settled design throughout **Section 2**. All 13 original
+flags are now resolved. Resolving two of the Phase-1 flags (status-
+determination mechanism, and save/resume) each surfaced one new, narrower
+open question — both listed at the end of Section 4, non-blocking for
+`/plan` to start against but worth a quick read before Phase 1 content is
+finalized.
 
 ---
 
@@ -311,40 +315,91 @@ not, and must not become, the system of record for the emails themselves
 
 ### 2.1 Purpose and constraints recap
 
-SME owner works through Article 50 items, each self-marked compliant / not
-compliant / needs-check. Self-serve-capable users get "how to fix it"
-guidance per item. Stuck users (self-serve or not) get routed to one
-lightweight async "still stuck? talk to us" contact point → agency-run free
-triage, not live chat, not automatic paid routing. Completion notifies a
-sales/CS rep when a client is flagged as needing help (US-10). No accounts,
-no live chat, no fine calculator, no automatic fixing.
+SME owner works through Article 50 items — **4 fixed provisions, confirmed
+by the CPO (2026-09-11) — see flag 5** — via a **diagnostic sub-question
+engine**: rather than self-reporting a status directly, the user answers a
+short set of factual yes/no/not-sure sub-questions per item, and the system
+computes that item's status flag (Compliant / Not compliant / Needs-check)
+from those answers (CPO decision, 2026-09-11 — see flag 1, and 2.2/S1.3
+below). This is a real change from this spec's original self-report
+assumption.
+
+Per-item guidance for flagged items states the computed status and cites
+the relevant Article 50 requirement only — **no "how to fix it" content**
+(CPO decision, 2026-09-11 — see flag 2, and 2.4 below).
+
+Stuck users get routed to one lightweight async "still stuck? talk to us"
+contact point → agency-run free triage, not live chat, not automatic paid
+routing. Completion notifies a sales/CS rep **only** when the client
+actively submits that contact form — confirmed opt-in trigger for US-10
+(CPO, 2026-09-11 — see flag 3, no design change from the prior draft).
+
+No accounts, but **lightweight local-only save/resume is a confirmed
+requirement** (CPO, 2026-09-11 — see flag 6 and S1.9), no live chat, no
+fine calculator, no automatic fixing.
+
+**Localization-readiness principle (CPO, 2026-09-11 — see flag 7):**
+Phase 1 content and UI copy are **English-only for this build**, confirmed.
+But the content structure and data model must not hardcode English in a
+way that would block adding languages later — e.g., checklist items,
+sub-questions, and guidance citations should be organized as content keyed
+by a stable item/question ID with an implicit (not hardcoded-string-only)
+locale association, so a future localization pass can add translated
+content per ID rather than requiring a data-model rework. This is a
+structural constraint on how content is organized, not a build requirement
+to actually support more than one language now.
+
+Throughout this section, every place the computed status is shown to a
+user, copy must frame it as a self-assessment **flag**, not a legal
+determination or certification ("this item is **flagged as** Not
+compliant," never "you are not compliant" or "you are certified
+compliant") — consistent with the PRD's explicit non-goal that this is not
+a legal-advice or certification product.
 
 ### 2.2 Primary user flow
 
 1. **Entry.** User arrives at the checklist (via the Phase 0 "notify me"
    email, a future campaign link, or direct navigation). Lands on an intro
-   screen.
+   screen. If a local save/resume record exists from a prior visit (S1.9),
+   the user is offered to resume rather than restarting at item 1.
 2. **Intro screen.** Explains what the checklist covers (Article 50
    transparency obligations for AI-generated website content only — not
    general AI Act compliance), how long it takes, that no account/login is
-   needed, and that it doesn't give legal certification — it flags status
-   and points to next steps. States the fine-framing caveat once here if
-   fines are referenced anywhere in the flow (see 2.6), so it doesn't need
-   repeating on every item screen.
-3. **Item-by-item walkthrough.** One Article 50 item at a time (see S1.3).
-   For each item:
+   needed, that it works by asking a few short questions per item rather
+   than asking the user to self-assess directly, and that it doesn't give
+   legal certification — it flags status and points to next steps. States
+   the fine-framing caveat once here if fines are referenced anywhere in
+   the flow (see 2.6), so it doesn't need repeating on every item screen.
+3. **Item-by-item walkthrough.** One Article 50 item at a time (4 items
+   total — see S1.3). For each item:
    a. Plain-language statement of the requirement.
-   b. User selects: **Compliant** / **Not compliant** / **Not sure**.
-   c. If Not compliant or Not sure: guidance content reveals inline (see
-      2.4 for what "guidance" means per status).
-   d. User continues to the next item. Status is saved for that item;
-      nothing else happens per-item (no per-item contact CTA — see
-      tradeoff 3.2).
-4. **Results/summary screen.** Shown once every item has a status. Recaps
-   all items and their statuses.
+   b. A short set of diagnostic sub-questions about what the user has
+      actually done on their site, each answered **Yes / No / Not sure**
+      (the same three-way primitive as before, now applied at the
+      sub-question level rather than directly to the item's status). Exact
+      sub-question count and wording per item is a content-authoring
+      output of the still-running legal sanity-check — not resolved here;
+      this spec fixes the pattern, not the content.
+   c. Once all of that item's sub-questions are answered, the system
+      computes and reveals the item's status flag inline, on the same
+      screen — no separate navigation step. Decision rule (pattern, not
+      final content): any "Not sure" sub-answer defers the item to
+      **Needs-check**; the specific Yes/No combinations that resolve to
+      Compliant vs. Not compliant are a per-item content-authoring
+      deliverable, pending the legal sanity-check.
+   d. If the computed status is Not compliant or Needs-check, a guidance
+      panel reveals inline (does not navigate away): status + citation to
+      the relevant Article 50 text/requirement only — no fix-it
+      instructions (see 2.4).
+   e. User continues to the next item. Both the item's sub-question answers
+      and its computed status are saved (see S1.9's data-shape note) — not
+      just the final status, so a returning user can revise an individual
+      sub-answer rather than re-answering the whole item.
+4. **Results/summary screen.** Shown once every item has a computed status.
+   Recaps all items and their statuses.
    - If everything is Compliant: congratulatory/no-action-needed state, no
-     stuck-CTA needed (optional low-key link only — see S1.5).
-   - If anything is Not compliant / Not sure: those specific items are
+     stuck-CTA needed (optional low-key link only — see S1.4).
+   - If anything is Not compliant / Needs-check: those specific items are
      listed, and a single "Still stuck? Talk to us" CTA is offered,
      covering exactly those flagged items (satisfies US-8's "exactly the
      items I'm stuck on" via pre-population, not via per-item CTAs).
@@ -357,18 +412,22 @@ no live chat, no fine calculator, no automatic fixing.
    "book a call" or promise a specific paid outcome, since triage happens
    first (see 2.5).
 7. **Notification.** Submitting the contact form (step 5) is what triggers
-   the sales/CS rep notification in US-10 (design decision — flagged for
-   confirmation in 4.3).
+   the sales/CS rep notification in US-10 — **confirmed** (CPO, 2026-09-11
+   — see flag 3; this was already the spec's design, no change).
 
 ### 2.3 Screens and states
 
 **S1.1 — Intro/landing screen**
 - Static content screen: scope statement, time estimate, no-login
-  statement, non-certification disclaimer, fine-framing caveat (if used).
-- Single "Start" action.
+  statement, a brief note that the checklist works via short per-item
+  questions rather than direct self-assessment, non-certification
+  disclaimer, fine-framing caveat (if used).
+- If a local save/resume record exists (S1.9), also offer a
+  "resume where you left off" action alongside "Start."
+- Single "Start" action (or "Resume," per above).
 
-**S1.2 — (Recommended addition, not a PRD requirement) Qualifying
-question**
+**S1.2 — Qualifying question — confirmed requirement (CPO, 2026-09-11 —
+see flag 4)**
 - "Does your website include any AI-generated content (text, images,
   chat, etc.)?" Yes / No / Not sure.
 - If "No": short exit message — "You likely don't need this checklist right
@@ -376,22 +435,37 @@ question**
   clearly out-of-scope visitor through the full item list.
 - If "Not sure": proceed into the checklist as normal (the checklist itself
   is how they'd find out).
-- This screen is my addition, not something the PRD asks for. Flagged in
-  4.4 for the CPO to confirm it's wanted before it's built.
+- This screen was originally the designer's own addition, not something
+  the PRD asked for. **The CPO has now confirmed it as a firm requirement**
+  (2026-09-11) — no longer optional or pending confirmation.
 
-**S1.3 — Item screen (repeated once per Article 50 item — count TBD, see
-flag 4.5)**
-- Progress indicator ("Item 3 of N") persists across all item screens.
+**S1.3 — Item screen (repeated once per Article 50 item — 4 items,
+confirmed count, see flag 5)**
+- Progress indicator ("Item 3 of 4") persists across all item screens.
 - Requirement text (plain language).
-- Three-way status control: Compliant / Not compliant / Not sure.
-- On Not compliant or Not sure: guidance panel expands inline (does not
-  navigate away) — see 2.4 for content rules.
-- "Next" advances once a status is selected. Back navigation is allowed
-  (to review/change a prior answer) but skipping ahead without answering
-  is not — the flow is linear (see tradeoff 3.3).
+- **Diagnostic sub-questions** for the current item, each with a Yes / No /
+  Not sure control. Sub-questions for an item are grouped and shown
+  together on that item's single screen — not split into their own
+  one-question-per-screen steps — to avoid compounding the linear wizard
+  into a wizard-within-a-wizard, regardless of how many sub-questions a
+  given item ends up needing once content is authored (see Section 3,
+  tradeoff 8).
+- Once every sub-question on the screen is answered, the item's **status
+  flag computes and displays automatically**, inline, framed as "This item
+  is flagged as: [Compliant / Not compliant / Needs-check]" — this is a
+  system computation, not a user selection.
+- On a computed status of Not compliant or Needs-check: guidance panel
+  expands inline (does not navigate away) — status + Article 50 citation
+  only, see 2.4.
+- "Next" advances once all of the item's sub-questions are answered (the
+  status computing automatically is not itself a separate action the user
+  takes). Back navigation is allowed (to review or change a prior item's
+  sub-question answers, which live-recomputes that item's status) but
+  skipping ahead without answering is not — the flow is linear (see
+  tradeoff 3.3).
 
 **S1.4 — Results/summary screen — all-compliant variant**
-- Positive framing, recap list (all green/compliant).
+- Positive framing, recap list (all green/compliant, computed statuses).
 - No fine-figure content needed here; if any fine-context copy appears at
   all in the app, this screen is a low-stakes place to reiterate the
   Article 99(6) caveat once, briefly, since it's a natural "here's your
@@ -400,8 +474,8 @@ flag 4.5)**
   point as S1.6, de-emphasized since there's nothing flagged.
 
 **S1.5 — Results/summary screen — has-flagged-items variant**
-- Recap list with per-item status (compliant/not compliant/not sure,
-  visually distinguished).
+- Recap list with per-item computed status (compliant/not compliant/
+  needs-check, visually distinguished).
 - Prominent "Still stuck? Talk to us" CTA, framed as low-friction and
   non-pushy per US-9 (e.g., not "Buy implementation now" — more like "Want
   a hand with any of this? We're happy to help.").
@@ -427,41 +501,67 @@ flag 4.5)**
   available, no silent failure. This is the single conversion-critical
   action in Phase 1 (it's what feeds US-10) — it must not fail silently.
 
-**S1.9 — Abandonment / return-to-in-progress state**
-- If a user leaves mid-checklist and comes back in the same browser
-  session, the checklist should resume where they left off rather than
-  restarting from item 1. Recommended as lightweight, local-only (e.g.,
-  browser storage) persistence — not an account system, not cross-device.
-  Flagged as underspecified in the PRD in 4.6; this is my recommended
-  default, not a confirmed requirement.
+**S1.9 — Save/resume (return-to-in-progress) state — confirmed
+requirement (CPO, 2026-09-11 — see flag 6)**
+- If a user leaves mid-checklist and comes back in the same browser, the
+  checklist resumes where they left off rather than restarting from item 1
+  — lightweight, local-only (e.g., browser storage) persistence, not an
+  account system, not cross-device. This was previously a recommendation
+  only; **it is now a confirmed requirement.**
+- **Data-shape note (new open question surfaced by resolving this
+  alongside flag 1 — flagged, not silently decided):** because status is
+  now system-computed from sub-question answers rather than self-reported
+  directly, persisting only a final status per item is not enough for a
+  coherent resume experience — a returning user should be able to revisit
+  and revise an individual sub-answer, not just see a final status or
+  re-answer the whole item from scratch. What actually needs to persist
+  (e.g., per-item sub-question answers plus the derived status, keyed by
+  item/question ID; whole-checklist blob vs. per-item entries; whether/how
+  to handle a stored answer set going stale if item content is edited
+  after a user started) is a genuine open engineering/content-versioning
+  question for `/plan` — not decided in this spec.
 
-**S1.10 — Sales/CS rep notification (system event, not a client-facing
-screen)**
-- Triggered by S1.6 submission (see 2.7 for why this trigger point, not
-  checklist completion itself).
-- Content needed for the rep: client identity (if known), which items were
-  flagged, any free-text context, timestamp. Exact delivery channel (email?
-  Slack? existing CRM?) is a `/plan`-stage decision, not a design one — not
-  specified in the PRD.
+### 2.4 Guidance content rules (US-7, US-9, "needs-check") — resolved
+2026-09-11 (flag 2)
 
-### 2.4 Guidance content rules (US-7, US-9, "needs-check")
+**Confirmed by the CPO (2026-09-11):** guidance content is the same shape
+for **both** Not compliant and Needs-check statuses, and is
+**citation-only** — no "how to fix it" remediation content anywhere in
+Phase 1. Concretely, the guidance panel for a flagged item states:
+- The computed status ("This item is flagged as: Not compliant" /
+  "...Needs-check").
+- A citation to the relevant Article 50 provision text/requirement (exact
+  content pending the legal sanity-check — not resolved here).
 
-- **Not compliant items:** guidance = "how to fix it" — concrete,
-  plain-language steps the self-serve-capable user can act on.
-- **Needs-check items:** the PRD doesn't specify separate content for this
-  status distinct from "how to fix it" (see flag 4.2). Design assumes the
-  same guidance panel serves double duty — phrased to help the user
-  determine their status ("here's what to look for") and, if it turns out
-  they're not compliant, the same content doubles as the fix. This avoids
-  building and maintaining two parallel content tracks per item without a
-  PRD instruction to do so. If legal/content review later determines
-  "how to check" and "how to fix" genuinely need to diverge per item, that's
-  a content scope change to raise before Phase 1 content is finalized.
-- **No per-item help CTA.** Guidance panels do not each carry their own
-  "still stuck" button. The single contact point lives only at the results
-  screen (S1.5/S1.6). This is deliberate — seeing a "need help? talk to us"
-  prompt after every single item would read as a repeated upsell push,
-  which US-9 explicitly asks to avoid.
+No remediation steps, no "here's what to change on your site" instructions,
+for either status. This replaces the prior draft's "one guidance-content
+slot does double duty" assumption (the earlier flag 2) — Not compliant and
+Needs-check now share one guidance-content shape **by design**, not by
+expedient assumption, since neither carries fix-it content at all.
+
+**No per-item help CTA.** Guidance panels do not each carry their own
+"still stuck" button. The single contact point lives only at the results
+screen (S1.5/S1.6). This is deliberate — seeing a "need help? talk to us"
+prompt after every single item would read as a repeated upsell push, which
+US-9 explicitly asks to avoid.
+
+**Consequence worth stating plainly (not a new open question — the CPO's
+decision above is firm — but a real downstream effect worth surfacing
+rather than quietly absorbing):** the PRD's **US-7** asks for self-serve-
+capable owners to get "clear how to fix it instructions" so they can close
+the gap without paying the agency. With remediation content removed
+entirely, Phase 1 no longer delivers on US-7 as literally written — a
+self-serve-capable owner now gets a status flag and an Article 50 citation,
+the same as a needs-help owner gets. In practice this collapses much of the
+functional distinction between the PRD's "self-serve-capable" and
+"needs-help" target users (Target users 1 and 2): both now receive
+identical per-item information and the same single path to further help
+(the results-screen contact CTA). This may well be the intended effect —
+it steers more flagged items toward agency triage, consistent with the
+retention/upsell goal in PRD Goal 4 — but it is a direct scope narrowing of
+US-7, not a small detail, and this spec is flagging it rather than letting
+the two documents quietly disagree. Recommend the PM/CPO update or
+formally retire US-7 in the PRD when convenient.
 
 ### 2.5 Triage / handoff policy (affects copy, not just backend)
 
@@ -472,7 +572,10 @@ copy constraint as much as a backend one — S1.6 and S1.7 copy must not
 imply an immediate live response, a booked call, or a sales pitch. It
 should read as "a person will look at this and get back to you," leaving
 room for the agency's triage process to decide free-guidance-only vs.
-proposing paid work.
+proposing paid work. With per-item guidance now citation-only rather than
+fix-it content (2.4), the triage conversation itself is where any actual
+"here's how to fix it" explanation now has to happen — an operational
+note for whoever staffs triage, not a design change.
 
 ### 2.6 Fine/penalty framing (Phase 1)
 
@@ -497,14 +600,25 @@ is scoped, not assumed to inherit the Phase 0 decision.
 - **Every item compliant on first pass:** see S1.4. No stuck-CTA forced;
   US-10 notification does not fire (nothing was flagged, no contact form
   submitted).
-- **User marks an item "Not compliant," reads guidance, and wants to
-  self-mark it resolved without re-answering:** not designed in as a
-  distinct action (e.g., no "mark as fixed" button mid-flow) — if they've
-  actually fixed it, they should just go back and change that item's
-  status to Compliant via the existing back-navigation (S1.3). Adding a
-  separate "I fixed it" state that doesn't change the underlying status
-  would create two sources of truth for one item; kept to one control per
-  item deliberately (see tradeoff 3.4).
+- **User answers a sub-question "Not sure":** per the decision rule in
+  2.2c, any "Not sure" sub-answer on an item defers that item's computed
+  status to **Needs-check**, regardless of the item's other answers — the
+  engine never forces a firm Compliant/Not-compliant call out of uncertain
+  input.
+- **User revisits a prior item via back-navigation and changes a
+  sub-question answer:** the item's status recomputes live, and its
+  guidance panel updates or disappears accordingly (e.g., a status that
+  was Not compliant and is now Compliant no longer shows a guidance
+  panel). No confirmation step is needed for this — it's the same
+  three-way sub-question control, just revised.
+- **User wants to self-mark an item resolved without re-answering its
+  sub-questions:** not designed in as a distinct action (e.g., no separate
+  "mark as fixed" button) — if they've actually fixed the underlying issue,
+  they go back and change the relevant sub-question answer(s) (S1.3), which
+  recomputes the status automatically. Sub-question answers remain the
+  single source of truth for an item's status; a separate "I fixed it" flag
+  that could disagree with the computed status would create two sources of
+  truth for one item (see tradeoff 3.4).
 - **User has zero items flagged but still wants to talk to someone
   (e.g., a question not covered by the checklist):** low-key link on S1.4
   covers this rather than blocking it entirely.
@@ -512,18 +626,17 @@ is scoped, not assumed to inherit the Phase 0 decision.
   resubmits:** treat a second submission from the same session as a normal
   additional message, not an error — same idempotent-and-friendly principle
   as Phase 0's duplicate-email handling (S0.6).
-- **Very long item list:** if Article 50 content mapping (pending legal
-  sanity-check) produces a long list, the linear one-item-at-a-time
-  pattern plus the return-to-in-progress state (S1.9) is the mitigation.
-  Actual item count isn't known yet (flag 4.5) — if it turns out to be
-  long, `/plan` should revisit whether a single-page checklist (all items
-  visible, no forced linear stepping) is a better fit than this
-  wizard-style flow.
-- **Notification volume:** because notification is opt-in-triggered (2.7's
-  chosen design), a self-serve owner who successfully resolves everything
-  via guidance alone never generates a sales/CS notification. That's
-  intentional — see 4.3 for why this is flagged as needing explicit CPO
-  sign-off rather than assumed.
+- **Item count / list length:** confirmed small and fixed — 4 items (CPO,
+  2026-09-11, see flag 5) — so the "what if the list is long" scenario
+  from the prior draft no longer applies. The strictly-linear,
+  one-item-at-a-time wizard pattern is confirmed appropriate without
+  qualification; the single-page-checklist alternative is not worth
+  revisiting.
+- **Notification volume:** because notification is opt-in-triggered (2.2
+  step 7, confirmed — flag 3), a self-serve owner who never asks for
+  contact never generates a sales/CS notification, even if they have
+  flagged items. That's intentional and now confirmed rather than merely
+  designed-for.
 
 ---
 
@@ -539,7 +652,7 @@ is scoped, not assumed to inherit the Phase 0 decision.
    "one lightweight... contact point," singular, and (b) repeating a
    help/upsell prompt after every item directly conflicts with US-9's
    "doesn't feel like an upsell push." Cost: a user who gets stuck on item 2
-   of N has to keep going through the rest of the checklist before they can
+   of 4 has to keep going through the rest of the checklist before they can
    ask for help. Judged acceptable — the items are meant to be quick
    self-assessments, not blockers, and forcing completion before contact
    also keeps the "completed checklist" data (used for the sales
@@ -549,14 +662,18 @@ is scoped, not assumed to inherit the Phase 0 decision.
    item" as a clean, unambiguous completion definition (per the PRD's own
    metric definitions). Cost: a user unsure about one item can't skip it and
    come back later within the same pass — they're expected to use "Not
-   sure" rather than skip. Flagged in 4.5 as worth revisiting if the real
-   item count turns out to be large.
+   sure" (now at the sub-question level) rather than skip. **Confirmed
+   appropriate, not merely provisional:** the CPO confirmed the item count
+   at 4 fixed provisions (2026-09-11 — see flag 5), which is comfortably
+   within range for this pattern — the single-page-checklist alternative
+   flagged in the prior draft as "worth revisiting if the count is large"
+   is no longer worth reconsidering.
 4. **No separate "I fixed it" action distinct from changing an item's
-   status.** One control (the three-way status) is the single source of
+   status.** One control (the sub-question answers) is the single source of
    truth per item, rather than layering a second "resolved" flag on top of
-   it. Cost: slightly more clicks (back-navigate to change status) than a
-   dedicated "mark fixed" shortcut would take. Chosen to avoid the data-
-   integrity ambiguity of two flags that can disagree.
+   it. Cost: slightly more clicks (back-navigate to change a sub-question
+   answer) than a dedicated "mark fixed" shortcut would take. Chosen to
+   avoid the data-integrity ambiguity of two flags that can disagree.
 5. **Duplicate submissions (email in Phase 0, contact form in Phase 1) are
    always treated as success, never shown as an error.** Prioritizes not
    making a well-intentioned repeat visitor feel like they did something
@@ -585,6 +702,29 @@ is scoped, not assumed to inherit the Phase 0 decision.
    that's a rebuild of S0.0, not an extension of it — acceptable since
    Phase 0 has no marketing/ad-pixel cookies to distinguish from analytics
    in the first place.
+8. **Sub-questions are grouped per item on one screen, not split into their
+   own one-question-per-screen steps.** Chosen so the linear wizard doesn't
+   become a wizard-within-a-wizard regardless of how many sub-questions a
+   given item ends up needing once content is authored (that count is
+   still unknown — a content-authoring output pending the legal
+   sanity-check, see flag 1). Cost: if a given item ends up needing many
+   sub-questions, that item's screen could get visually busy — worth
+   revisiting at `/plan` once real sub-question counts are known.
+9. **Guidance content is status + citation only, with no remediation
+   instructions anywhere in Phase 1** (CPO decision, 2026-09-11 — see flag
+   2 and 2.4). Cost: narrows the PRD's US-7 as literally written, and
+   collapses the practical distinction between the "self-serve-capable"
+   and "needs-help" target users into a single "contact us" path for any
+   flagged item. Recorded here for traceability — this is a firm CPO
+   decision, not this spec's own judgment call, but the tradeoff and its
+   cost are real and worth tracking.
+10. **Sub-question answers, not just the derived status, are the persisted
+    save/resume source of truth** (interaction of flags 1 and 6). Cost: a
+    larger local-storage payload and more resume-logic complexity than
+    persisting a single status value per item would need. Chosen because a
+    returning user should be able to revise an individual sub-answer and
+    have the status recompute, not just re-answer an entire item from
+    scratch or see a frozen final status they can't unpick.
 
 ---
 
@@ -600,59 +740,77 @@ duplicate-email handling (confirmed as originally spec'd — treat as
 success). These are now reflected as decisions in Sections 1.1, 1.3
 (S0.0/S0.1/S0.6), 1.4, 1.5, 1.6, and 3 — not listed below as open questions.
 
-The remaining flags affect Phase 1, which has no fixed date, but are still
-worth resolving early since they shape the checklist's core interaction
-model.
+**Resolved 2026-09-11 (were items 1–7 in the prior revision of this spec,
+covering Phase 1):** the CPO resolved all 7 remaining Phase-1 flags in this
+revision. Each is listed below with its resolution and where it's now
+reflected in Section 2.
 
-1. **Mechanism for determining per-item status ("compliant / not compliant
-   / needs-check") — self-report vs. a diagnostic sub-question engine.**
-   US-6 just says the user wants "each item marked," without saying how the
-   determination happens. This spec assumes straight self-report (user
-   directly selects their own status per item, per the literal wording),
-   not a system of guided sub-questions that infers status. That's the
-   simpler flow and matches the PRD's Non-goals (not a legal-advice or
-   certification product). Flagged in case a diagnostic approach was
-   intended.
-2. **What "needs-check" guidance content actually is**, distinct from "how
-   to fix it" content for "not compliant" items. Not specified. This spec
-   assumes one shared guidance-content slot per item does double duty (see
-   2.4). Flagged because it affects the Phase 1 content-authoring workload,
-   which is downstream of the still-in-progress legal sanity-check.
-3. **The trigger for the US-10 sales/CS rep notification is ambiguous
-   between two readings:** (a) automatic, passive — fires whenever a
-   completed checklist has any non-compliant item, regardless of whether
-   the client asked for help; or (b) opt-in, active — fires only when the
-   client actively submits the "still stuck? talk to us" contact form. This
-   spec designs for (b), because it better matches US-9's "doesn't feel
-   like an upsell push" and the "agency triages first, doesn't auto-route"
-   escalation policy — notifying sales about a client who never asked for
-   contact would sit oddly next to that policy. But this is a genuine
-   ambiguity in the PRD's own phrasing ("flagged as needing help" could
-   mean either "the checklist flagged them" or "they flagged themselves"),
-   and it changes how many notifications sales actually receives. Needs
-   explicit confirmation before `/plan`.
-4. **The qualifying "do you even have AI-generated content?" screen
-   (S1.2) is my addition, not a PRD requirement.** Flagged so it isn't
-   mistaken for something the PRD asked for — confirm whether it's wanted
-   before it's built, since it does add a screen/decision point the PRD
-   never mentions.
-5. **Article 50 item count and content are not yet known** — they're an
-   output of the still-running legal sanity-check, not this PRD. This
-   spec deliberately specifies structure (wizard pattern, progress
-   indicator, guidance-panel pattern) without assuming a specific count.
-   If the real count turns out to be large, revisit the "strictly linear,
-   one item at a time" pattern (tradeoff 3.3) against a single-page
-   checklist alternative at `/plan`.
-6. **Save/resume (session persistence) for Phase 1 is not addressed in the
-   PRD's Phase 1 scope boundaries** — only Phase 0 explicitly rules out
-   accounts/saved progress. Whether Phase 1 needs any persistence at all,
-   and if so how much (session-only vs. something more durable), is
-   genuinely open. This spec recommends a lightweight, local-only,
-   no-account fallback (S1.9) as a minimum, but this is a recommendation
-   to confirm, not a resolved requirement.
-7. **Language scope (English-only)** carried forward from the PRD's own
-   flag as unconfirmed — not a new issue raised here, just noted as still
-   open and relevant to Phase 1 content authoring.
+1. **Status-determination mechanism — RESOLVED: diagnostic sub-question
+   engine, not self-report.** The user answers a short set of factual
+   Yes/No/Not-sure sub-questions per item; the system computes the status
+   flag (Compliant / Not compliant / Needs-check) from those answers,
+   rather than the user directly selecting a status. This is a real scope
+   change from this spec's prior self-report assumption. Reflected in 2.1,
+   2.2 (step 3), S1.3, and 2.7. Kept consistent with the PRD's non-goal
+   (not a legal-advice/certification product): the engine determines a
+   status *flag* only, and all copy must frame it as such ("flagged as,"
+   never "you are compliant" or "certified") — see 2.1's copy-framing note.
+   - **New question this raises, flagged rather than silently decided:**
+     how to phrase the sub-questions themselves so they read as factual
+     self-assessment prompts ("did you do X on your site?") rather than
+     legal-advice-adjacent questions ("is your use of AI high-risk?") is a
+     real, unresolved content-authoring question. It sits downstream of
+     the still-in-progress legal sanity-check and needs a content/legal-
+     copy pass before Phase 1 content is finalized — not resolved by this
+     spec, which specifies only the interaction pattern, not the actual
+     question wording.
+2. **"Needs-check" guidance content vs. "how to fix it" — RESOLVED: no
+   remediation content at all**, for either Not compliant or Needs-check.
+   Guidance = status + Article 50 citation only, for both statuses alike.
+   Reflected in 2.4. Note: this narrows the PRD's US-7 as literally
+   written — see the consequence note in 2.4 and tradeoff 9 in Section 3.
+3. **US-10 notification trigger — RESOLVED (confirmed): opt-in only**,
+   firing on contact-form submission (S1.6), not automatically on
+   checklist completion. This was already the spec's tentative design
+   (reading b); the CPO has now confirmed it rather than reading a. No
+   design change — reflected in 2.2 (step 7) and 2.7.
+4. **Qualifying screen S1.2 — RESOLVED: keep it, confirmed as a firm
+   requirement**, not the designer's own optional addition. Reflected in
+   S1.2.
+5. **Article 50 item count/pattern — RESOLVED: 4 fixed provisions,
+   confirmed linear wizard.** The CPO supplied the count directly (actual
+   provision text/content is still pending the separate, ongoing legal
+   sanity-check — don't assume specific content from the count alone). 4
+   items is comfortably within range for the strictly-linear,
+   one-item-at-a-time wizard pattern already spec'd; the single-page-
+   checklist alternative is no longer worth reconsidering. Reflected in
+   S1.3, 2.7 (the "very long item list" edge case removed as no longer
+   applicable), and Section 3 tradeoff 3.
+6. **Save/resume persistence — RESOLVED: yes, confirmed as a firm
+   requirement** — lightweight, local-only, no-account persistence, per
+   the spec's own prior S1.9 recommendation. Reflected in S1.9.
+   - **New question this raises, flagged rather than silently decided:**
+     the exact local-persistence data shape is now a genuinely open
+     question, because status is system-computed from sub-question answers
+     (flag 1 above) rather than self-reported directly — persisting only a
+     final status per item isn't enough for a coherent resume experience.
+     What needs to persist (per-item sub-question answers plus derived
+     status, keyed how, with what staleness/versioning handling if item
+     content changes after a user has started) is an engineering/content-
+     versioning question for `/plan`, not decided here — see the data-shape
+     note in S1.9 and tradeoff 10 in Section 3.
+7. **Language scope — RESOLVED: English-only for now**, confirmed. The
+   content structure and data model must not hardcode English in a way
+   that blocks future localization (e.g., content should be organized so
+   it could be keyed by locale later, even though only one locale exists
+   today) — carried into Section 2 as a design principle (see 2.1) rather
+   than a build requirement for this phase.
+
+All 13 original flags (6 Phase 0 + 7 Phase 1) are now resolved. Two new,
+narrower questions were surfaced in resolving flags 1 and 6 above
+(sub-question copy framing; local-persistence data shape) — both
+non-blocking for `/plan` to begin against, but worth the CPO's or content
+team's attention before Phase 1 content/build is finalized.
 
 ---
 
@@ -662,20 +820,27 @@ model.
   email capture (name, company, phone, multi-step qualification) was cut
   to protect the 4-day timeline and because the PRD explicitly scopes
   Phase 0 down to "a generic interest-capture form."
-- **Phase 1's status-determination is self-report only**, not a guided
-  diagnostic tree, to keep the product aligned with the PRD's non-goal of
-  not being a legal-advice/certification tool, and to avoid inventing
-  compliance-logic complexity the PRD never asked for.
+- **Phase 1's status-determination is a diagnostic sub-question engine, not
+  free-form self-report** (CPO decision, 2026-09-11 — see Section 4, flag
+  1) — a change from this spec's original self-report assumption. Kept
+  simple by design: sub-questions are factual Yes/No/Not-sure prompts that
+  compute a status *flag*, not a guided branching legal-advice tree, to
+  stay aligned with the PRD's non-goal of not being a legal-advice/
+  certification tool.
+- **No "how to fix it" remediation content anywhere in Phase 1** (CPO
+  decision, 2026-09-11 — see Section 4, flag 2) — guidance is status +
+  citation only. This is a real cut against the PRD's US-7 as literally
+  written, flagged rather than silently absorbed (see 2.4).
 - **No per-item contact/escalation controls in Phase 1** — consolidated
   into the single results-screen contact point, both because the PRD
   describes "one" contact point and because it directly serves US-9's
   anti-upsell-pushiness goal.
 - **No cross-device/account-based resume in Phase 1** — consistent with
-  the PRD's broader no-accounts stance (explicit for Phase 0, inferred as
-  the simplest consistent choice for Phase 1 too, per flag 4.6).
+  the PRD's broader no-accounts stance (explicit for Phase 0; now a
+  confirmed requirement for Phase 1 too, local-only and no-account, per
+  flag 6).
 - **Cookie banner kept to a single Accept/Decline choice, no preference
   center** — the CPO's 2026-09-07 decision added the banner requirement
   itself, but the simplest GDPR-compliant shape was kept to protect the
   4-day Phase 0 timeline (see tradeoff 3.7).
 </content>
-</invoke>
