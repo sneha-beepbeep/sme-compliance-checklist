@@ -22,6 +22,7 @@
 const puppeteer = require('puppeteer-core');
 const os = require('os');
 const path = require('path');
+const fs = require('fs');
 
 const CHROME_PATH =
   process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -313,6 +314,18 @@ async function runAllCompliantResults() {
 }
 
 (async () => {
+  // Each run function launches Chrome with a persistent userDataDir (so
+  // cookie-consent/localStorage state behaves like a real returning
+  // visitor within a single run). That persistence previously leaked
+  // *across* separate invocations of this script too, since nothing
+  // ever cleaned PROFILE_DIR up: a profile left over from an earlier run
+  // (e.g. one that had already clicked "Accept" on the cookie banner)
+  // silently carried into the next "fresh" run and produced a false
+  // failure/pass on the cookie-banner checks, which have nothing to do
+  // with the actual page under test. Wiping PROFILE_DIR here guarantees
+  // every invocation of this script starts from a genuinely clean slate.
+  fs.rmSync(PROFILE_DIR, { recursive: true, force: true });
+
   await runMainWalkthrough();
   await runMidChecklistResume();
   await runQualifyingNoAndCookieBanner();
