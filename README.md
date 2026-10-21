@@ -27,9 +27,6 @@ The page live at **https://compliance.gro-better.com/** currently:
 - Shows a cookie-consent banner before any analytics cookie is set, and
   links to a [Privacy Policy](https://compliance.gro-better.com/privacy-policy).
 
-It does **not** yet tell you your compliance status, walk you through any
-checklist items, or estimate any fine or penalty amount — that's the next
-part, described below.
 
 ## What's coming next
 
